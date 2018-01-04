@@ -508,19 +508,27 @@ class BigQueryPublisher(SamplePublisher):
       logging.info('Publishing %d samples to %s', len(samples),
                    self.bigquery_table)
       load_cmd = [self.bq_path]
-      if self.project_id:
-        load_cmd.append('--project_id=' + self.project_id)
-      if self.service_account:
-        assert self.service_account_private_key_file is not None
-        load_cmd.extend(['--service_account=' + self.service_account,
-                         '--service_account_credential_file=' +
-                         self._credentials_file,
-                         '--service_account_private_key_file=' +
-                         self.service_account_private_key_file])
+
       load_cmd.extend(['load',
                        '--source_format=NEWLINE_DELIMITED_JSON',
+                       '--autodetect',
                        self.bigquery_table,
                        tf.name])
+
+      # if self.project_id:
+      #   load_cmd.append('--project_id=' + self.project_id)
+      # if self.service_account:
+      #     assert self.service_account_private_key_file is not None
+      #     load_cmd.extend(['--service_account=' + self.service_account,
+      #                      '--service_account_credential_file=' +
+      #                      self._credentials_file,
+      #                      '--service_account_private_key_file=' +
+      #                      self.service_account_private_key_file])
+      #     load_cmd.extend(['load',
+      #                      '--source_format=NEWLINE_DELIMITED_JSON',
+      #                      '--autodetect',
+      #                      self.bigquery_table,
+      #                      tf.name])
       vm_util.IssueRetryableCommand(load_cmd)
 
 
